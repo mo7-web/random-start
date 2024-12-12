@@ -1,2 +1,5 @@
-# random-start-
-随机启动某个APP
+# hello uvue
+
+uvue 的 vue 语法测试工程。
+
+每个页面均需配置自动化测试脚本，详见[自动化测试](https://uniapp.dcloud.net.cn/worktile/auto/hbuilderx-extension/)
