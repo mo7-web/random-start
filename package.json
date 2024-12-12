@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "chinese-workday": "^1.10.0",
     "dayjs": "^1.11.13"
   }
 }
