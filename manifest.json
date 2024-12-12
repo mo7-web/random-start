@@ -1,7 +1,7 @@
 {
     "name" : "random-start",
     "appid" : "__UNI__9FE13E9",
-    "description" : "",
+    "description" : "随机时间启动某个APP",
     "versionName" : "1.0.0",
     "versionCode" : "100",
     "transformPx" : false,
