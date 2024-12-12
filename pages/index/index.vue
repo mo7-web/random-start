@@ -25,7 +25,7 @@
 <script>
 import dayjs from "dayjs";
 import { isWorkday } from "chinese-workday";
-import { CreateInterval_Global } from "@/common/tools";
+import { CreateInterval_Global, GetRandom } from "@/common/tools";
 
 const upStartWorkDingTime_str = "08:51:00";
 const upWorkTime_str = "09:00:00";
@@ -80,11 +80,15 @@ export default {
           `${day_str} ${upStartWorkDingTime_str}`
         );
         const upWorkDingEndTime = dayjs(`${day_str} ${upEndWorkDingTime_str}`);
+
         const isUpWorkDingStart = DayObj.isAfter(upWorkDingStartTime); // 之后
         const isUpWorkDingEnd = DayObj.isBefore(upWorkDingEndTime); // 之前
         if (isUpWorkDingStart && isUpWorkDingEnd) {
           _this.isUpWordDingTime = true;
+          _this.WordDingFun(upWorkDingEndTime.subtract(upWorkDingStartTime));
         }
+        _this.WordDingFun(upWorkDingEndTime.subtract(upWorkDingStartTime));
+
         const downWorkTime = dayjs(`${day_str} ${downWorkTime_str}`);
         const downWorkDingEndTime = dayjs(
           `${day_str} ${downWorkDingEndTime_str}`
@@ -94,6 +98,7 @@ export default {
 
         if (isDownWorkTime && isDownWorkDingEndTime) {
           _this.isDownWorkDingTime = true;
+          _this.WordDingFun(downWorkDingEndTime.subtract(downWorkTime));
         }
 
         const upWorkTime = dayjs(`${day_str} ${upWorkTime_str}`);
@@ -104,6 +109,13 @@ export default {
           _this.isWorkTime = true;
         }
       }
+    },
+
+    WordDingFun(diff) {
+      const secDiff = diff / 1000;
+      const randSec = GetRandom(0, secDiff);
+
+      console.log("randSec", randSec);
     },
 
     OpenQiYeWeiXin() {
