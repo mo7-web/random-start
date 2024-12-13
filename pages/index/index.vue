@@ -1,6 +1,7 @@
 <template>
   <view class="content">
     <image class="logo" src="/static/logo.png"></image>
+    {{ Version }}
     <view class="text-area">
       <text class="title">{{ nowTime }}</text>
     </view>
@@ -32,6 +33,7 @@
 import dayjs from "dayjs";
 import { isWorkday } from "chinese-workday";
 import { CloneDeep, CreateInterval_Global, GetRandom } from "@/common/tools";
+import manifestJson from "@/manifest.json";
 
 const upStartWorkDingTime_str = "08:50:00";
 const upWorkTime_str = "09:00:00";
@@ -43,6 +45,7 @@ const downWorkDingEndTime_str = "18:20:00";
 export default {
   data() {
     return {
+      Version: "",
       nowTime: "",
       isWorkDay: false,
       isWorkTime: false,
@@ -64,6 +67,8 @@ export default {
   methods: {
     GetNowTime() {
       const _this = this;
+      _this.Version = manifestJson.versionName;
+
       const NowDay = dayjs().format("YYYY-MM-DD");
       _this.nowTime = dayjs().format("YYYY-MM-DD HH:mm:ss");
 
