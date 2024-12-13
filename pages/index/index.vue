@@ -33,7 +33,7 @@ import dayjs from "dayjs";
 import { isWorkday } from "chinese-workday";
 import { CloneDeep, CreateInterval_Global, GetRandom } from "@/common/tools";
 
-const upStartWorkDingTime_str = "08:53:00";
+const upStartWorkDingTime_str = "08:50:00";
 const upWorkTime_str = "09:00:00";
 const upEndWorkDingTime_str = "09:07:00";
 
