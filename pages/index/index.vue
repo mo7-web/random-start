@@ -12,10 +12,16 @@
     </view>
 
     <view class="text-area">
-      <text class="title">上班打卡时间段: {{ isUpWordDingTime }}</text>
+      <text class="title">
+        上班打卡({{ LocalData.IsUpWorkDing }}):
+        {{ LocalData.UpWorkDingTime }}
+      </text>
     </view>
     <view class="text-area">
-      <text class="title">下班打卡时间段: {{ isDownWorkDingTime }}</text>
+      <text class="title">
+        下班打卡({{ LocalData.IsDownWorkDing }}):
+        {{ LocalData.DownWorkDingTime }}
+      </text>
     </view>
 
     <button @click="OpenQiYeWeiXin">手动打开企业微信</button>
@@ -25,9 +31,9 @@
 <script>
 import dayjs from "dayjs";
 import { isWorkday } from "chinese-workday";
-import { CreateInterval_Global, GetRandom } from "@/common/tools";
+import { CloneDeep, CreateInterval_Global, GetRandom } from "@/common/tools";
 
-const upStartWorkDingTime_str = "08:51:00";
+const upStartWorkDingTime_str = "08:53:00";
 const upWorkTime_str = "09:00:00";
 const upEndWorkDingTime_str = "09:07:00";
 
@@ -40,9 +46,8 @@ export default {
       nowTime: "",
       isWorkDay: false,
       isWorkTime: false,
-      isWorkDown: false,
-      isUpWordDingTime: false,
-      isDownWorkDingTime: false,
+
+      LocalData: {},
     };
   },
   onLoad() {
@@ -59,13 +64,32 @@ export default {
   methods: {
     GetNowTime() {
       const _this = this;
+      const NowDay = dayjs().format("YYYY-MM-DD");
       _this.nowTime = dayjs().format("YYYY-MM-DD HH:mm:ss");
+
+      // uni.removeStorageSync("LocalData");
+
+      const LocalData = uni.getStorageSync("LocalData");
+      if (!LocalData) {
+        const LocalData = {
+          LastDay: NowDay, // 最后的日期
+          IsUpWorkDing: false, // 是否打了上班卡
+          UpWorkDingTime: "", // 上班打卡时间
+          IsDownWorkDing: false, // 是否打了下班卡
+          DownWorkDingTime: "", // 下班打卡时间
+        };
+        uni.setStorageSync("LocalData", LocalData);
+        return;
+      }
+
+      if (LocalData.LastDay != NowDay) {
+        uni.removeStorageSync("LocalData");
+        return;
+      }
+      _this.LocalData = LocalData;
 
       _this.isWorkDay = false;
       _this.isWorkTime = false;
-      _this.isWorkDown = false;
-      _this.isUpWordDingTime = false;
-      _this.isDownWorkDingTime = false;
       _this.WorkdayFun();
     },
 
@@ -81,50 +105,98 @@ export default {
         );
         const upWorkDingEndTime = dayjs(`${day_str} ${upEndWorkDingTime_str}`);
 
-        const isUpWorkDingStart = DayObj.isAfter(upWorkDingStartTime); // 之后
-        const isUpWorkDingEnd = DayObj.isBefore(upWorkDingEndTime); // 之前
-        if (isUpWorkDingStart && isUpWorkDingEnd) {
-          _this.isUpWordDingTime = true;
-          _this.WordDingFun(upWorkDingEndTime.subtract(upWorkDingStartTime));
-        }
-        _this.WordDingFun(upWorkDingEndTime.subtract(upWorkDingStartTime));
-
         const downWorkTime = dayjs(`${day_str} ${downWorkTime_str}`);
         const downWorkDingEndTime = dayjs(
           `${day_str} ${downWorkDingEndTime_str}`
         );
-        const isDownWorkTime = DayObj.isAfter(downWorkTime); // 之后
-        const isDownWorkDingEndTime = DayObj.isBefore(downWorkDingEndTime); // 之前
-
-        if (isDownWorkTime && isDownWorkDingEndTime) {
-          _this.isDownWorkDingTime = true;
-          _this.WordDingFun(downWorkDingEndTime.subtract(downWorkTime));
-        }
 
         const upWorkTime = dayjs(`${day_str} ${upWorkTime_str}`);
+
         const isUpWorkTimeAfter = DayObj.isAfter(upWorkTime); // 之后
         const isDownWorkTimeBefore = DayObj.isBefore(downWorkTime); // 之前
-
         if (isUpWorkTimeAfter && isDownWorkTimeBefore) {
           _this.isWorkTime = true;
+        }
+
+        if (
+          _this.LocalData.UpWorkDingTime &&
+          _this.LocalData.DownWorkDingTime
+        ) {
+          //
+        } else {
+          const upWorkDiff =
+            upWorkDingEndTime.subtract(upWorkDingStartTime) / 1000;
+          const downWorkDiff =
+            downWorkDingEndTime.subtract(downWorkTime) / 1000;
+
+          const upWorkDingDelay = GetRandom(0, upWorkDiff);
+          const downWorkDingDelay = GetRandom(0, downWorkDiff);
+
+          const upWorkDingTime = upWorkDingStartTime.add(
+            upWorkDingDelay,
+            "second"
+          );
+          const downWorkDingTime = downWorkTime.add(
+            downWorkDingDelay,
+            "second"
+          );
+
+          _this.LocalData.UpWorkDingTime = upWorkDingTime.format(
+            "YYYY-MM-DD HH:mm:ss"
+          );
+          _this.LocalData.DownWorkDingTime = downWorkDingTime.format(
+            "YYYY-MM-DD HH:mm:ss"
+          );
+          uni.setStorageSync("LocalData", CloneDeep(_this.LocalData));
+        }
+        _this.WordDingFunc();
+      }
+    },
+
+    WordDingFunc() {
+      const _this = this;
+      if (!_this.LocalData.IsUpWorkDing) {
+        // 没打上班卡
+        const UpWorkDingTime = _this.LocalData.UpWorkDingTime;
+        const IsUpDing = dayjs().isAfter(dayjs(UpWorkDingTime));
+
+        if (IsUpDing) {
+          _this.OpenQiYeWeiXin("UpDing");
+        }
+      }
+      if (!_this.LocalData.IsDownWorkDing) {
+        // 没打下班卡
+        const DownWorkDingTime = _this.LocalData.DownWorkDingTime;
+        const IsDownDing = dayjs().isAfter(dayjs(DownWorkDingTime));
+        if (IsDownDing) {
+          _this.OpenQiYeWeiXin("DownDing");
         }
       }
     },
 
-    WordDingFun(diff) {
-      const secDiff = diff / 1000;
-      const randSec = GetRandom(0, secDiff);
+    OpenQiYeWeiXin(type) {
+      const _this = this;
+      if (type == "UpDing") {
+        _this.LocalData.IsUpWorkDing = true;
+      }
+      if (type == "DownDing") {
+        _this.LocalData.IsDownWorkDing = true;
+      }
+      uni.setStorageSync("LocalData", CloneDeep(_this.LocalData));
 
-      console.log("randSec", randSec);
-    },
-
-    OpenQiYeWeiXin() {
       plus.runtime.launchApplication(
         {
           pname: "com.tencent.wework",
         },
         (e) => {
           alert(+e.message);
+          if (type == "UpDing") {
+            _this.LocalData.IsUpWorkDing = false;
+          }
+          if (type == "DownDing") {
+            _this.LocalData.IsDownWorkDing = false;
+          }
+          uni.setStorageSync("LocalData", CloneDeep(_this.LocalData));
         }
       );
     },
