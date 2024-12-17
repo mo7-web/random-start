@@ -37,7 +37,7 @@ import manifestJson from "@/manifest.json";
 
 const upStartWorkDingTime_str = "08:50:00";
 const upWorkTime_str = "09:00:00";
-const upEndWorkDingTime_str = "09:07:00";
+const upEndWorkDingTime_str = "09:03:00";
 
 const downWorkTime_str = "18:00:00";
 const downWorkDingEndTime_str = "18:20:00";
