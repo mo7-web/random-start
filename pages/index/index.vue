@@ -40,7 +40,7 @@ const upWorkTime_str = "09:00:00";
 const upEndWorkDingTime_str = "09:03:00";
 
 const downWorkTime_str = "18:00:00";
-const downWorkDingEndTime_str = "18:20:00";
+const downWorkDingEndTime_str = "18:10:00";
 
 export default {
   data() {
@@ -49,7 +49,6 @@ export default {
       nowTime: "",
       isWorkDay: false,
       isWorkTime: false,
-
       LocalData: {},
     };
   },

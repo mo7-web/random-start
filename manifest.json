@@ -2,7 +2,7 @@
     "name" : "random-start",
     "appid" : "__UNI__9FE13E9",
     "description" : "随机时间启动某个APP",
-    "versionName" : "1.0.2",
+    "versionName" : "1.0.3",
     "versionCode" : 101,
     "transformPx" : false,
     /* 5+App特有相关 */
