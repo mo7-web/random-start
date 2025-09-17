@@ -35,12 +35,12 @@ import { isWorkday } from "chinese-workday";
 import { CloneDeep, CreateInterval_Global, GetRandom } from "@/common/tools";
 import manifestJson from "@/manifest.json";
 
-const upStartWorkDingTime_str = "08:50:00";
+const upStartWorkDingTime_str = "08:46:00";
 const upWorkTime_str = "09:00:00";
-const upEndWorkDingTime_str = "09:03:00";
+const upEndWorkDingTime_str = "08:59:55";
 
 const downWorkTime_str = "18:00:00";
-const downWorkDingEndTime_str = "18:10:00";
+const downWorkDingEndTime_str = "18:17:00";
 
 export default {
   data() {
