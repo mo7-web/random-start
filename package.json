@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "chinese-workday": "^1.10.0",
-    "dayjs": "^1.11.13"
+    "dayjs": "^1.11.13",
+    "vue": "^3.5.21"
   }
 }
