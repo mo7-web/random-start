@@ -203,6 +203,24 @@ export default {
           uni.setStorageSync("LocalData", CloneDeep(_this.LocalData));
         }
       );
+
+      setTimeout(() => {
+        plus.runtime.launchApplication(
+          {
+            pname: "com.tencent.wework",
+          },
+          (e) => {
+            alert(+e.message);
+            if (type == "UpDing") {
+              _this.LocalData.IsUpWorkDing = false;
+            }
+            if (type == "DownDing") {
+              _this.LocalData.IsDownWorkDing = false;
+            }
+            uni.setStorageSync("LocalData", CloneDeep(_this.LocalData));
+          }
+        );
+      }, 2000);
     },
   },
 };
